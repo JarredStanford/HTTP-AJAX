@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: whitesmoke;
+  min-height: 100vh;
 }
 
 .App-logo {
@@ -30,4 +35,28 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.paper {
+  padding: 10px;
+  margin: 3%;
+  width: 25%;
+}
+
+.cardBox {
+  text-decoration: none;
+  color: black;
+}
+
+.formPaper {
+  height: 50%;
+  display: flex;
+  margin: auto;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 15%;
+}
+
+.addFriend {
+  text-decoration: none;
 }
