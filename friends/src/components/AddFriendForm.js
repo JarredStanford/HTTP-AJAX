@@ -1,13 +1,38 @@
 import React from "react";
+import { Input, Button, Paper } from "@material-ui/core";
+import styled from "styled-components";
 
 export default class AddFriendForm extends React.Component {
   constructor() {
     super();
     this.state = {
       name: "",
-      age: "",
-      email: ""
+      age: Number(""),
+      email: "",
+      isUpdating: false
     };
+  }
+
+  componentDidMount() {
+    if (this.props.selectedFriend !== null) {
+      this.setState({
+        name: this.props.selectedFriend ? this.props.selectedFriend.name : "",
+        age: this.props.selectedFriend ? this.props.selectedFriend.age : "",
+        email: this.props.selectedFriend ? this.props.selectedFriend.email : "",
+        isUpdating: this.props.selectedFriend ? true : false
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.selectedFriend.id !== prevProps.selectedFriend.id) {
+      this.setState({
+        name: this.props.selectedFriend ? this.props.selectedFriend.name : "",
+        age: this.props.selectedFriend ? this.props.selectedFriend.age : "",
+        email: this.props.selectedFriend ? this.props.selectedFriend.email : "",
+        isUpdating: this.props.selectedFriend ? true : false
+      });
+    }
   }
 
   handleChanges = e => {
@@ -18,63 +43,76 @@ export default class AddFriendForm extends React.Component {
 
   addFriend = e => {
     e.preventDefault();
-    this.props.postFriend({
+    this.props.postFriend(this.state);
+    this.setState({
       name: this.state.name,
-      age: Number(this.state.age),
+      age: this.state.age,
       email: this.state.email
     });
-    this.setState(() => this.initialState);
+    this.setState({
+      name: "",
+      age: Number(""),
+      email: ""
+    });
   };
 
   updateFriend = e => {
     e.preventDefault();
-    const selectedFriend = this.props.friendsList.find(
-      friend => friend.id === this.props.selectedID
-    );
     this.props.putFriend({
-      name: this.state.name || selectedFriend.name,
-      age: Number(this.state.age) || Number(selectedFriend.age),
-      email: this.state.email || selectedFriend.email
+      name: this.state.name,
+      age: Number(this.state.age),
+      email: this.state.email
     });
-    this.setState(() => this.initialState);
-    //If I update a field, that input will not get set to it's original state. I also tried the normal setState to "". Can't figure it out.
+    this.setState({
+      name: "",
+      age: Number(""),
+      email: "",
+      isUpdating: false
+    });
   };
 
   render() {
-    const selectedFriend = this.props.friendsList.find(
-      friend => friend.id === this.props.selectedID
-    );
+    console.log(this.state.age);
     return (
-      <form onSubmit={this.addFriend}>
-        <input
-          placeholder="Name"
-          onChange={this.handleChanges}
-          defaultValue={
-            this.props.selectedID === "" ? this.state.name : selectedFriend.name
-          }
-          //Using default value so it will auto submit the original data when a name is selected/updated but nothing is entered into the name field.
-          name="name"
-          required
-        />
-        <input
-          placeholder="Age"
-          onChange={this.handleChanges}
-          defaultValue={this.props.selectedID === "" ? "" : selectedFriend.age}
-          name="age"
-          type="number"
-        />
-        <input
-          placeholder="Email"
-          onChange={this.handleChanges}
-          defaultValue={
-            this.props.selectedID === "" ? "" : selectedFriend.email
-          }
-          name="email"
-          type="email"
-        />
-        <button>Add Friend</button>
-        <button onClick={this.updateFriend}>Update</button>
-      </form>
+      <Paper className="formPaper">
+        <FormStyle
+          onSubmit={this.state.isUpdating ? this.updateFriend : this.addFriend}
+        >
+          <Input
+            placeholder="Name"
+            onChange={this.handleChanges}
+            value={this.state.name}
+            name="name"
+            required
+          />
+          <Input
+            placeholder="Age"
+            onChange={this.handleChanges}
+            value={this.state.age}
+            name="age"
+            type="number"
+          />
+          <Input
+            placeholder="Email"
+            onChange={this.handleChanges}
+            value={this.state.email}
+            name="email"
+            type="email"
+          />
+          <Button color="primary" type="submit">
+            {this.state.isUpdating ? "Update Friend" : "Add Friend"}
+          </Button>
+        </FormStyle>
+      </Paper>
     );
   }
 }
+
+const FormStyle = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center
+  height: 50%;
+  text-align: center;
+  padding: 10%;
+`;
